@@ -19,7 +19,7 @@ namespace prs.models
         public string RejectionReason { get; set; }
         public string DeliveryMode { get; set; }
         public DateTime SubmittedDate { get; set; }
-        public string Status { get; set; } = "New";
+        public string Status { get; set; } = "NEW";
         [Column(TypeName = "decimal(12,2)")]
         [Required]
         public decimal Total { get; set; }

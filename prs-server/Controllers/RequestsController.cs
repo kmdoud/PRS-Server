@@ -20,6 +20,27 @@ namespace prs_server.Controllers
             _context = context;
         }
 
+        [HttpPut("/api/requests/review/{id}")]
+        public async Task<IActionResult> PutRequestReview(int id)
+        {
+            var request = await _context.Requests.FindAsync(id);
+            if(request == null)
+            {
+                return NotFound();
+            }
+            if(request.Total <= 50)
+            {
+                request.Status = "APPROVED";
+            }
+            else
+            {
+                request.Status = "REVIEW";
+            }
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         // GET: api/Requests
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Request>>> GetRequest()

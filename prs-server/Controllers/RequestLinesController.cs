@@ -20,6 +20,17 @@ namespace prs_server.Controllers
             _context = context;
         }
 
+        private bool RecalculateTotal(int id)
+        {
+            var request = _context.Requests.Find(id);
+            var lines = _context.RequestLines.Include(rl => rl.Product).Where(l => l.RequestId == id).ToList();
+            var total = lines.Sum(ls =>ls.Quantity * ls.Product.Price);
+            request.Total = total;
+            _context.SaveChanges();
+            return true;
+        }
+       
+
         // GET: api/RequestLines
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RequestLine>>> GetRequestLines()
@@ -68,6 +79,7 @@ namespace prs_server.Controllers
                 }
             }
 
+            RecalculateTotal(requestLine.RequestId);
             return NoContent();
         }
 
@@ -77,6 +89,7 @@ namespace prs_server.Controllers
         {
             _context.RequestLines.Add(requestLine);
             await _context.SaveChangesAsync();
+            RecalculateTotal(requestLine.RequestId);
 
             return CreatedAtAction("GetRequestLine", new { id = requestLine.Id }, requestLine);
         }
@@ -93,6 +106,7 @@ namespace prs_server.Controllers
 
             _context.RequestLines.Remove(requestLine);
             await _context.SaveChangesAsync();
+            RecalculateTotal(requestLine.RequestId);
 
             return requestLine;
         }
